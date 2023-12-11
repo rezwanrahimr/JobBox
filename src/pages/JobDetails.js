@@ -1,5 +1,4 @@
 import React from "react";
-
 import meeting from "../assets/meeting.jpg";
 import { BsArrowRightShort, BsArrowReturnRight } from "react-icons/bs";
 const JobDetails = () => {
