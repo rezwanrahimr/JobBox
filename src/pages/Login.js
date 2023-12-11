@@ -5,24 +5,31 @@ import { useNavigate } from "react-router-dom";
 import loginImage from "../assets/login.svg";
 import { loginUser } from "../features/auth/authSlice";
 import { useDispatch, useSelector } from "react-redux";
+import toast from "react-hot-toast";
+import Loading from "../components/reusable/Loading";
 const Login = () => {
   const { register, handleSubmit, reset } = useForm();
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { email, isLoading } = useSelector((state) => state.auth);
+  const { email, isLoading, error } = useSelector((state) => state.auth);
   const onSubmit = ({ email, password }) => {
     dispatch(loginUser({ email, password }));
   };
 
 
   useEffect(() => {
-    if (isLoading) {
-      <h1>Loading..</h1>
-    }
+
     if (email !== "") {
       navigate("/")
     }
-  }, [email, isLoading])
+    if (error) {
+      toast.error(error,{id:"authError"});
+    }
+  }, [email, isLoading,error])
+
+  if (isLoading) {
+    return <Loading/>
+  }
 
   return (
     <div className='flex h-screen items-center'>

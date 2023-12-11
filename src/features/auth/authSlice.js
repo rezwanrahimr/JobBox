@@ -5,7 +5,7 @@ import auth from "../../firebase/firebase.init";
 const initialState = {
     email: "",
     role: "",
-    isLoading: true,
+    isLoading: false,
     isError: false,
     error: ""
 }
@@ -18,7 +18,6 @@ export const createUser = createAsyncThunk('auth/createUser', async ({ email, pa
 // Login User with Email and Password.
 export const loginUser = createAsyncThunk('auth/loginUser', async ({ email, password }) => {
     const data = await signInWithEmailAndPassword(auth, email, password);
-    console.log(data)
     return data.user.email;
 })
 
@@ -28,6 +27,9 @@ const authSlice = createSlice({
     reducers: {
         logOut: (state) => {
             state.email = ""
+        },
+        setUser: (state, { payload }) => {
+            state.email = payload
         }
     },
     extraReducers: (builder) => {
@@ -43,7 +45,7 @@ const authSlice = createSlice({
         }).addCase(createUser.rejected, (state, action) => {
             state.isLoading = false;
             state.isError = true;
-            state.error = action.payload
+            state.error = action.error.message;
         }).addCase(loginUser.pending, (state) => {
             state.isLoading = true;
             state.isError = false;
@@ -55,8 +57,9 @@ const authSlice = createSlice({
         }).addCase(loginUser.rejected, (state, action) => {
             state.isLoading = false;
             state.isError = true;
+            state.error = action.error.message;
         })
     }
 })
-export const { logOut } = authSlice.actions;
+export const { logOut, setUser, } = authSlice.actions;
 export default authSlice.reducer;
