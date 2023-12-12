@@ -2,13 +2,19 @@ import React, { useEffect, useState } from "react";
 import { useForm, useWatch } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { FaChevronLeft } from "react-icons/fa";
+import { useRegisterMutation } from "../../features/auth/authApi";
+import toast from "react-hot-toast";
+import { useDispatch, useSelector } from "react-redux";
+import { updateRole } from "../../features/auth/authSlice";
 
 const EmployerRegistration = () => {
   const [countries, setCountries] = useState([]);
-
   const { handleSubmit, register, control } = useForm();
   const term = useWatch({ control, name: "term" });
   const navigate = useNavigate();
+  const [userRegister, { isLoading, isError }] = useRegisterMutation();
+  const {email} = useSelector(state => state.auth);
+  const dispatch = useDispatch();
 
   const businessCategory = [
     "Automotive",
@@ -39,8 +45,13 @@ const EmployerRegistration = () => {
       .then((data) => setCountries(data));
   }, []);
 
-  const onSubmit = (data) => {
-    console.log(data);
+  const onSubmit = async (data) => {
+    const user = await userRegister({ ...data, role: "employee" })
+    if (user?.data?.acknowledged === true) {
+      toast.success("Registration Done",{id:"employee registration"})
+      dispatch(updateRole('employee'));
+      navigate("/"); 
+    }
   };
 
   return (
@@ -74,7 +85,7 @@ const EmployerRegistration = () => {
             <label className='mb-2' htmlFor='email'>
               Email
             </label>
-            <input type='email' id='email' disabled {...register("email")} />
+            <input type='email' id='email' disabled value={email} {...register("email")} />
           </div>
           <div className='flex flex-col w-full max-w-xs'>
             <h1 className='mb-3'>Gender</h1>

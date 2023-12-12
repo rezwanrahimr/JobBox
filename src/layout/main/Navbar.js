@@ -30,6 +30,13 @@ const Navbar = () => {
           </Link>
         </li>
         {
+          email && role && <li>
+            <Link className='hover:text-primary' to='/dashboard'>
+              Dashboard
+            </Link>
+          </li>
+        }
+        {
           email && !role && <li>
             <Link className='bg-primary text-white  px-2 py-1.5 rounded-full hover:border-white hover:text-white hover:bg-primary hover:px-4 transition-all' to='/register'>
               Get Started

@@ -9,6 +9,7 @@ const initialState = {
     isError: false,
     error: ""
 }
+
 // Create User
 export const createUser = createAsyncThunk('auth/createUser', async ({ email, password }) => {
     const data = await createUserWithEmailAndPassword(auth, email, password);
@@ -30,6 +31,9 @@ const authSlice = createSlice({
         },
         setUser: (state, { payload }) => {
             state.email = payload
+        },
+        updateRole: (state, { payload }) => {
+            state.role = payload
         }
     },
     extraReducers: (builder) => {
@@ -61,5 +65,5 @@ const authSlice = createSlice({
         })
     }
 })
-export const { logOut, setUser, } = authSlice.actions;
+export const { logOut, setUser, updateRole } = authSlice.actions;
 export default authSlice.reducer;
