@@ -1,9 +1,17 @@
 import React from "react";
 import { useFieldArray, useForm } from "react-hook-form";
 import { FiTrash } from "react-icons/fi";
+import { useDispatch } from "react-redux";
+import toast from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
+import { useAddJobMutation } from "../../features/job/jobApi";
+import { postJob } from "../../features/job/jobSlice";
 
 const AddJob = () => {
+  const [newJobAdd, { isLoading, error }] = useAddJobMutation();
   const { handleSubmit, register, control } = useForm();
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
   const {
     fields: resFields,
     append: resAppend,
@@ -20,9 +28,16 @@ const AddJob = () => {
     remove: reqRemove,
   } = useFieldArray({ control, name: "requirements" });
 
-  const onSubmit = (data) => {
-    console.log(data);
-  };
+  const onSubmit = async (data) => {
+    if (data) {
+      const result = await dispatch(postJob(data))
+      if (result?.payload.acknowledged === true) {
+        toast.success("Job Post Done", { id: "jobPost" })
+        navigate("/dashboard");
+      }
+
+    }
+  }
 
   return (
     <div className='flex justify-center items-center overflow-auto p-10'>
@@ -44,7 +59,7 @@ const AddJob = () => {
             Company Name
           </label>
           <input
-            disabled
+
             className='cursor-not-allowed'
             type='text'
             id='companyName'

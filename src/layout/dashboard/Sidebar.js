@@ -20,6 +20,22 @@ const Sidebar = () => {
             Add Job
           </Link>
         </li>
+        <li>
+          <Link
+            className='hover:bg-primary hover:text-white bg-primary/10 transition-all w-full block py-2 px-3 rounded-full'
+            to='employer'
+          >
+           Employee
+          </Link>
+        </li>
+        <li>
+          <Link
+            className='hover:bg-primary hover:text-white bg-primary/10 transition-all w-full block py-2 px-3 rounded-full'
+            to='candidate'
+          >
+            candidate
+          </Link>
+        </li>
       </ul>
     </div>
   );

@@ -8,9 +8,11 @@ import { useDispatch, useSelector } from "react-redux";
 import { Toaster } from "react-hot-toast";
 import Loading from "./components/reusable/Loading";
 import { useLoadUserQuery } from "./features/auth/authApi";
+import { useLoadJobsQuery } from "./features/job/jobApi";
 
 
 function App() {
+  const {jobData} = useLoadJobsQuery();
   const { data, error } = useLoadUserQuery();
   const { isLoading, email } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
@@ -29,7 +31,7 @@ function App() {
     }
   }, [data, email])
   isLoading && <Loading />
-  console.log(data)
+  console.log('job dat',jobData)
   return (
     <>
       <RouterProvider router={routes} />
