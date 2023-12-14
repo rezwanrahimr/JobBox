@@ -24,8 +24,15 @@ const jobPost = apiSlice.injectEndpoints({
             query: (id) => ({
                 url: `/job/${id}`
             })
+        }),
+        applyJob: builder.mutation({
+            query: (applyData) => ({
+                url: "/apply",
+                method: "PATCH",
+                body: applyData
+            })
         })
     })
 })
 
-export const { useAddJobMutation, useLoadJobsQuery, useSingleJobMutation } = jobPost;
+export const { useAddJobMutation, useLoadJobsQuery, useSingleJobMutation,useApplyJobMutation } = jobPost;

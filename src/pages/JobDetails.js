@@ -1,11 +1,14 @@
 import React, { useEffect } from "react";
 import meeting from "../assets/meeting.jpg";
 import { BsArrowRightShort, BsArrowReturnRight } from "react-icons/bs";
-import { useSingleJobMutation } from "../features/job/jobApi";
+import { useApplyJobMutation, useSingleJobMutation } from "../features/job/jobApi";
 import { useParams } from "react-router-dom";
 import Loading from "../components/reusable/Loading";
+import { useSelector } from "react-redux";
 const JobDetails = () => {
   const [getSingleJob, { data, isLoading }] = useSingleJobMutation();
+  const [applyJob] = useApplyJobMutation();
+  const { email } = useSelector((state) => state.auth);
   const { id } = useParams();
   const {
     companyName,
@@ -26,7 +29,15 @@ const JobDetails = () => {
   useEffect(() => {
     getSingleJob(id)
   }, [id])
-  
+
+  const handleApply = () => {
+    const data = {
+      email: email,
+      id: _id
+    }
+    applyJob(data);
+  }
+
   isLoading && <Loading />
   return (
     <div className='pt-14 grid grid-cols-12 gap-5'>
@@ -37,7 +48,7 @@ const JobDetails = () => {
         <div className='space-y-5'>
           <div className='flex justify-between items-center mt-5'>
             <h1 className='text-xl font-semibold text-primary'>{position}</h1>
-            <button className='btn'>Apply</button>
+            <button className='btn' onClick={handleApply}>Apply</button>
           </div>
           <div>
             <h1 className='text-primary text-lg font-medium mb-3'>Overview</h1>

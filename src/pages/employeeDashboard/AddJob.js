@@ -30,7 +30,7 @@ const AddJob = () => {
 
   const onSubmit = async (data) => {
     if (data) {
-      const result = await dispatch(postJob(data))
+      const result = await dispatch(postJob({ ...data, apply: [], candidate: [] }))
       if (result?.payload.acknowledged === true) {
         toast.success("Job Post Done", { id: "jobPost" })
         navigate("/dashboard");
