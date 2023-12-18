@@ -4,12 +4,14 @@ import { BsArrowRightShort, BsArrowReturnRight } from "react-icons/bs";
 import { useApplyJobMutation, useSingleJobMutation } from "../features/job/jobApi";
 import { useParams } from "react-router-dom";
 import Loading from "../components/reusable/Loading";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { getQuestion } from "../features/job/jobSlice";
 const JobDetails = () => {
   const [getSingleJob, { data, isLoading }] = useSingleJobMutation();
   const [applyJob] = useApplyJobMutation();
   const { email } = useSelector((state) => state.auth);
   const { id } = useParams();
+  const dispatch = useDispatch();
   const {
     companyName,
     position,
@@ -22,9 +24,10 @@ const JobDetails = () => {
     requirements,
     responsibilities,
     overview,
-    queries,
     _id,
   } = data || {}
+
+const question = []
 
   useEffect(() => {
     getSingleJob(id)
@@ -37,6 +40,21 @@ const JobDetails = () => {
     }
     applyJob(data);
   }
+
+  const handleChat = (e) => {
+    e.preventDefault()
+    const chatData = {
+      email: email,
+      id: _id,
+      question: e.target.question.value
+    }
+    dispatch(question(chatData));
+  }
+
+  useEffect(async() => {
+     const getData = await dispatch(getQuestion());
+     console.log(getData)
+  }, [])
 
   isLoading && <Loading />
   return (
@@ -96,7 +114,7 @@ const JobDetails = () => {
               General Q&A
             </h1>
             <div className='text-primary my-2'>
-              {queries?.map(({ question, email, reply, id }) => (
+              {question?.map(({ question, email, reply, id }) => (
                 <div>
                   <small>{email}</small>
                   <p className='text-lg font-medium'>{question}</p>
@@ -119,19 +137,22 @@ const JobDetails = () => {
               ))}
             </div>
 
-            <div className='flex gap-3 my-5'>
-              <input
-                placeholder='Ask a question...'
-                type='text'
-                className='w-full'
-              />
-              <button
-                className='shrink-0 h-14 w-14 bg-primary/10 border border-primary hover:bg-primary rounded-full transition-all  grid place-items-center text-primary hover:text-white'
-                type='button'
-              >
-                <BsArrowRightShort size={30} />
-              </button>
-            </div>
+            <form onSubmit={handleChat}>
+              <div className='flex gap-3 my-5'>
+                <input
+                  placeholder='Ask a question...'
+                  type='text'
+                  className='w-full'
+                  name="question"
+                />
+                <button
+                  className='shrink-0 h-14 w-14 bg-primary/10 border border-primary hover:bg-primary rounded-full transition-all  grid place-items-center text-primary hover:text-white'
+                  type='submit'
+                >
+                  <BsArrowRightShort size={30} />
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       </div>
