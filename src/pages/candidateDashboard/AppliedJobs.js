@@ -1,24 +1,38 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { useGetApplyJobsQuery } from "../../features/job/jobApi";
 import { useSelector } from "react-redux";
 import JobCard from "../../components/reusable/JobCard";
-import Loading from "../../components/reusable/Loading";
-import { useGetAppliedJobsQuery } from "../../features/job/jobApi";
 
 const AppliedJobs = () => {
-  const {
-    user: { email },
-  } = useSelector((state) => state.auth);
-  const { data, isLoading } = useGetAppliedJobsQuery(email);
+  const { data } = useGetApplyJobsQuery();
+  const [getApplyJobs, setGetApplyJobs] = useState(null);
+  const { email } = useSelector((state) => state.auth);
 
-  if (isLoading) {
-    return <Loading />;
-  }
+  useEffect(() => {
+    let applyJobs = [];
+    data?.forEach(element => {
+    
+
+      if (element.apply && element.apply.length >= 1) {
+        const applyedJobs = element.apply.find(job => job.email === email);
+
+        if (applyedJobs) {
+          applyJobs.push(element);
+        }
+      }
+    })
+
+    setGetApplyJobs(applyJobs)
+
+  }, [data])
+
+  console.log(getApplyJobs)
 
   return (
     <div>
       <h1 className='text-xl py-5'>Applied jobs</h1>
       <div className='grid grid-cols-2 gap-5 pb-5'>
-        {data?.data?.map((job) => (
+        {getApplyJobs?.map((job) => (
           <JobCard jobData={job} />
         ))}
       </div>

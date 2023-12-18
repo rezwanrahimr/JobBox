@@ -2,18 +2,16 @@ import React, { useEffect, useState } from "react";
 import { useForm, useWatch } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { FaChevronLeft } from "react-icons/fa";
-import { useRegisterMutation } from "../../features/auth/authApi";
 import toast from "react-hot-toast";
 import { useDispatch, useSelector } from "react-redux";
-import { updateRole } from "../../features/auth/authSlice";
+import { employeeRegister, updateRole, userRegister } from "../../features/auth/authSlice";
 
 const EmployerRegistration = () => {
   const [countries, setCountries] = useState([]);
   const { handleSubmit, register, control } = useForm();
   const term = useWatch({ control, name: "term" });
   const navigate = useNavigate();
-  const [userRegister, { isLoading, isError }] = useRegisterMutation();
-  const {email} = useSelector(state => state.auth);
+  const { email } = useSelector(state => state.auth);
   const dispatch = useDispatch();
 
   const businessCategory = [
@@ -46,8 +44,10 @@ const EmployerRegistration = () => {
   }, []);
 
   const onSubmit = async (data) => {
-    const user = await userRegister({ ...data, role: "employee" })
-    if (user?.data?.acknowledged === true) {
+  
+    const user = await dispatch(employeeRegister({ ...data, role: "employee" ,email:email}))
+
+    if (user?.payload?.acknowledged === true) {
       toast.success("Registration Done",{id:"employee registration"})
       dispatch(updateRole('employee'));
       navigate("/"); 

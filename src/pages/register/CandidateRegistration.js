@@ -2,6 +2,9 @@ import React, { useEffect, useState } from "react";
 import { useForm, useWatch } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { FaChevronLeft } from "react-icons/fa";
+import { useDispatch, useSelector } from "react-redux";
+import toast from "react-hot-toast";
+import { candidateRegister, updateRole, userRegister } from "../../features/auth/authSlice";
 
 const CandidateRegistration = () => {
   const [countries, setCountries] = useState([]);
@@ -9,6 +12,8 @@ const CandidateRegistration = () => {
   const term = useWatch({ control, name: "term" });
   console.log(term);
   const navigate = useNavigate();
+  const { email } = useSelector((state) => state.auth);
+  const dispatch = useDispatch();
 
   useEffect(() => {
     fetch("https://restcountries.com/v3.1/all")
@@ -16,8 +21,13 @@ const CandidateRegistration = () => {
       .then((data) => setCountries(data));
   }, []);
 
-  const onSubmit = (data) => {
-    console.log(data);
+  const onSubmit = async (data) => {
+    const user = await dispatch(candidateRegister({ ...data, role: "Candidate", email: email }));
+    if (user?.payload?.acknowledged === true) {
+      toast.success("Registration Done", { id: "Candidate registration" })
+      dispatch(updateRole('Candidate'));
+      navigate("/");
+    }
   };
 
   return (
@@ -51,7 +61,7 @@ const CandidateRegistration = () => {
             <label className='mb-2' htmlFor='email'>
               Email
             </label>
-            <input type='email' id='email' {...register("email")} />
+            <input type='email' id='email' value={email} {...register("email")} />
           </div>
           <div className='flex flex-col w-full max-w-xs'>
             <h1 className='mb-3'>Gender</h1>

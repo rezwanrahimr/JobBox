@@ -22,6 +22,32 @@ export const loginUser = createAsyncThunk('auth/loginUser', async ({ email, pass
     return data.user.email;
 })
 
+// Employee Register
+export const employeeRegister = createAsyncThunk('auth/createEmployee', async (employeeData) => {
+    const response = fetch("http://localhost:5000/user", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(employeeData)
+    });
+    const data = (await response).json()
+    return data;
+})
+
+export const candidateRegister = createAsyncThunk('auth/createCandidate', async (candidateData) => {
+    const response = fetch("http://localhost:5000/user", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(candidateData)
+    });
+    const data = (await response).json()
+    return data;
+})
+
+
 const authSlice = createSlice({
     name: 'auth',
     initialState,
@@ -59,6 +85,28 @@ const authSlice = createSlice({
             state.email = action.payload;
             state.isError = false;
         }).addCase(loginUser.rejected, (state, action) => {
+            state.isLoading = false;
+            state.isError = true;
+            state.error = action.error.message;
+        }).addCase(employeeRegister.pending, (state) => {
+            state.isLoading = true;
+            state.isError = false;
+            state.error = ""
+        }).addCase(employeeRegister.fulfilled, (state, action) => {
+            state.isLoading = false;
+            state.error = ""
+        }).addCase(employeeRegister.rejected, (state, action) => {
+            state.isLoading = false;
+            state.isError = true;
+            state.error = action.error.message;
+        }).addCase(candidateRegister.pending, (state) => {
+            state.isLoading = true;
+            state.isError = false;
+            state.error = ""
+        }).addCase(candidateRegister.fulfilled, (state, action) => {
+            state.isLoading = false;
+            state.error = ""
+        }).addCase(candidateRegister.rejected, (state, action) => {
             state.isLoading = false;
             state.isError = true;
             state.error = action.error.message;
