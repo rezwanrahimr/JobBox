@@ -1,17 +1,20 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import meeting from "../assets/meeting.jpg";
 import { BsArrowRightShort, BsArrowReturnRight } from "react-icons/bs";
 import { useApplyJobMutation, useSingleJobMutation } from "../features/job/jobApi";
 import { useParams } from "react-router-dom";
 import Loading from "../components/reusable/Loading";
 import { useDispatch, useSelector } from "react-redux";
-import { getQuestion } from "../features/job/jobSlice";
+import { getQuestion, question, sendReplay } from "../features/job/jobSlice";
 const JobDetails = () => {
+  const [questions, setQuestions] = useState([]);
   const [getSingleJob, { data, isLoading }] = useSingleJobMutation();
   const [applyJob] = useApplyJobMutation();
-  const { email } = useSelector((state) => state.auth);
+  const { email, role } = useSelector((state) => state.auth);
+  const [count, setCount] = useState(0);
   const { id } = useParams();
   const dispatch = useDispatch();
+  const formRef = useRef(null);
   const {
     companyName,
     position,
@@ -27,8 +30,6 @@ const JobDetails = () => {
     _id,
   } = data || {}
 
-const question = []
-
   useEffect(() => {
     getSingleJob(id)
   }, [id])
@@ -41,20 +42,52 @@ const question = []
     applyJob(data);
   }
 
-  const handleChat = (e) => {
+  // handle candidate comment
+  const handleChat = async (e) => {
     e.preventDefault()
     const chatData = {
       email: email,
       id: _id,
-      question: e.target.question.value
+      question: e.target.question.value,
+      ans: []
     }
-    dispatch(question(chatData));
+    const result = await dispatch(question(chatData));
+    if (result.payload.acknowledged) {
+      setCount(prevState => prevState + 1)
+      formRef.current.reset();
+    }
+
   }
 
-  useEffect(async() => {
-     const getData = await dispatch(getQuestion());
-     console.log(getData)
-  }, [])
+  useEffect(() => {
+
+    const getData = async () => {
+
+      const response = await dispatch(getQuestion());
+      if (response.payload) {
+        setQuestions(response.payload)
+      }
+    }
+    getData()
+  }, [count])
+
+  // handle candidate comment replay
+  const handleReplaySubmit = async (event) => {
+    event.preventDefault();
+
+    const replayText = {
+      text: event.target.replayMessage.value,
+      email: email,
+      id: event.target.id.value,
+    }
+
+    const result = await dispatch(sendReplay(replayText));
+    if (result.payload) {
+      setCount(prevState => prevState + 1)
+      formRef.current.reset();
+    }
+    
+  }
 
   isLoading && <Loading />
   return (
@@ -114,30 +147,34 @@ const question = []
               General Q&A
             </h1>
             <div className='text-primary my-2'>
-              {question?.map(({ question, email, reply, id }) => (
+              {questions?.map(({ question, email, ans, _id }) => (
                 <div>
                   <small>{email}</small>
                   <p className='text-lg font-medium'>{question}</p>
-                  {reply?.map((item) => (
+                  {ans?.map((item) => (
                     <p className='flex items-center gap-2 relative left-5'>
                       <BsArrowReturnRight /> {item}
                     </p>
                   ))}
 
-                  <div className='flex gap-3 my-5'>
-                    <input placeholder='Reply' type='text' className='w-full' />
-                    <button
-                      className='shrink-0 h-14 w-14 bg-primary/10 border border-primary hover:bg-primary rounded-full transition-all  grid place-items-center text-primary hover:text-white'
-                      type='button'
-                    >
-                      <BsArrowRightShort size={30} />
-                    </button>
-                  </div>
+                  {role === "employee" && <form ref={formRef} onSubmit={handleReplaySubmit}>
+                    <div className='flex gap-3 my-5'>
+                      <input placeholder='Reply' type='text' name="replayMessage" className='w-full' />
+                      <button
+                        className='shrink-0 h-14 w-14 bg-primary/10 border border-primary hover:bg-primary rounded-full transition-all  grid place-items-center text-primary hover:text-white'
+                        type='submit'
+                        name="id"
+                        value={_id}
+                      >
+                        <BsArrowRightShort size={30} />
+                      </button>
+                    </div>
+                  </form>}
                 </div>
               ))}
             </div>
 
-            <form onSubmit={handleChat}>
+            {role === "candidate" && <form ref={formRef} onSubmit={handleChat}>
               <div className='flex gap-3 my-5'>
                 <input
                   placeholder='Ask a question...'
@@ -152,7 +189,7 @@ const question = []
                   <BsArrowRightShort size={30} />
                 </button>
               </div>
-            </form>
+            </form>}
           </div>
         </div>
       </div>

@@ -31,6 +31,18 @@ export const getQuestion = createAsyncThunk('job/getQuestion', async () => {
     return data;
 })
 
+export const sendReplay = createAsyncThunk('job/replay', async (replayData) => {
+    const response = fetch("http://localhost:5000/replay", {
+        method: "PATCH",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(replayData)
+    });
+    const data = (await response).json()
+    return data;
+})
+
 const initialState = {
     isLoading: false,
     isSuccess: false
