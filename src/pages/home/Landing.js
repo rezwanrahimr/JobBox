@@ -126,7 +126,7 @@ const Landing = () => {
               <h2 className='badge-container'>Popular Search</h2>
               <div className='mt-3 max-w-xl flex flex-wrap  gap-3'>
                 {keywords.map((item) => (
-                  <Badge key={item} className='badge'>
+                  <Badge key={item} className='badge text-primary'>
                     {item}
                   </Badge>
                 ))}

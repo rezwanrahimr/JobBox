@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import meeting from "../assets/meeting.jpg";
 import { BsArrowRightShort, BsArrowReturnRight } from "react-icons/bs";
 import { useApplyJobMutation, useSingleJobMutation } from "../features/job/jobApi";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import Loading from "../components/reusable/Loading";
 import { useDispatch, useSelector } from "react-redux";
 import { getQuestion, question, sendReplay } from "../features/job/jobSlice";
@@ -15,6 +15,7 @@ const JobDetails = () => {
   const { id } = useParams();
   const dispatch = useDispatch();
   const formRef = useRef(null);
+  const navigate = useNavigate();
   const {
     companyName,
     position,
@@ -28,6 +29,7 @@ const JobDetails = () => {
     responsibilities,
     overview,
     _id,
+    apply
   } = data || {}
 
   useEffect(() => {
@@ -86,8 +88,11 @@ const JobDetails = () => {
       setCount(prevState => prevState + 1)
       formRef.current.reset();
     }
-    
+
   }
+
+  const checkApply = apply?.filter(item => item.email == email);
+  console.log("chck",checkApply?.length)
 
   isLoading && <Loading />
   return (
@@ -99,7 +104,11 @@ const JobDetails = () => {
         <div className='space-y-5'>
           <div className='flex justify-between items-center mt-5'>
             <h1 className='text-xl font-semibold text-primary'>{position}</h1>
-            <button className='btn' onClick={handleApply}>Apply</button>
+            {
+              checkApply?.length > 0 ? <button className='btn'>Already Applied</button> : <button disabled={role === 'employee'} className='btn' onClick={() => email && role ? handleApply : navigate("/login")}>Apply</button>
+            }
+
+
           </div>
           <div>
             <h1 className='text-primary text-lg font-medium mb-3'>Overview</h1>

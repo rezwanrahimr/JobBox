@@ -1,7 +1,7 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 
 export const postJob = createAsyncThunk('job/post', async (jobData) => {
-    const response = fetch("http://localhost:5000/job", {
+    const response = fetch("https://job-box-server-rust.vercel.app/job", {
         method: "POST",
         headers: {
             "Content-Type": "application/json"
@@ -14,7 +14,7 @@ export const postJob = createAsyncThunk('job/post', async (jobData) => {
 
 
 export const question = createAsyncThunk('job/question', async (questionData) => {
-    const response = fetch("http://localhost:5000/question", {
+    const response = fetch("https://job-box-server-rust.vercel.app/question", {
         method: "POST",
         headers: {
             "Content-Type": "application/json"
@@ -26,13 +26,13 @@ export const question = createAsyncThunk('job/question', async (questionData) =>
 })
 
 export const getQuestion = createAsyncThunk('job/getQuestion', async () => {
-    const response = await fetch("http://localhost:5000/question");
+    const response = await fetch("https://job-box-server-rust.vercel.app/question");
     const data = await response.json()
     return data;
 })
 
 export const sendReplay = createAsyncThunk('job/replay', async (replayData) => {
-    const response = fetch("http://localhost:5000/replay", {
+    const response = fetch("https://job-box-server-rust.vercel.app/replay", {
         method: "PATCH",
         headers: {
             "Content-Type": "application/json"
@@ -52,11 +52,11 @@ const jobSlice = createSlice({
     initialState,
     reducers: {},
     extraReducers: (builder) => {
-        builder.addCase(postJob.pending, (state, action) => {
-            state.isLoading = true
+        builder.addCase(postJob.pending, (state) => {
+            state.isLoading = true;
         }).addCase(postJob.fulfilled, (state, action) => {
-            state.isLoading = false,
-                state.isSuccess = action.payload.acknowledged
+            state.isLoading = false;
+            state.isSuccess = action.payload.acknowledged;
         })
     }
 })

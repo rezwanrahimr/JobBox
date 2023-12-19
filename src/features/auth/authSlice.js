@@ -24,7 +24,7 @@ export const loginUser = createAsyncThunk('auth/loginUser', async ({ email, pass
 
 // Employee Register
 export const employeeRegister = createAsyncThunk('auth/createEmployee', async (employeeData) => {
-    const response = fetch("http://localhost:5000/user", {
+    const response = fetch("https://job-box-server-rust.vercel.app/user", {
         method: "POST",
         headers: {
             "Content-Type": "application/json"
@@ -36,7 +36,7 @@ export const employeeRegister = createAsyncThunk('auth/createEmployee', async (e
 })
 
 export const candidateRegister = createAsyncThunk('auth/createCandidate', async (candidateData) => {
-    const response = fetch("http://localhost:5000/user", {
+    const response = fetch("https://job-box-server-rust.vercel.app/user", {
         method: "POST",
         headers: {
             "Content-Type": "application/json"

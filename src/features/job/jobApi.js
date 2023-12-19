@@ -26,7 +26,8 @@ const jobPost = apiSlice.injectEndpoints({
                 url: "/apply",
                 method: "PATCH",
                 body: applyData
-            })
+            }),
+            invalidatesTags: ["jobs"]
         }),
         getApplyJobs: builder.query({
             query: () => ({
